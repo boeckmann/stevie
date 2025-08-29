@@ -45,11 +45,8 @@ void windinit(void)
 	char *p = getenv("TERM");
 
 	initscr();
-	Columns = 80;
-	if ( strncmp(p,"vt52",4)==0 )
-		Rows = 25;
-	else
-		Rows = 24;
+	Columns = getmaxx(stdscr);
+	Rows = getmaxy(stdscr);
 	cbreak();
 	nonl();
 	noecho();
