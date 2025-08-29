@@ -197,6 +197,12 @@ void beeep(void)
 {
 #ifdef ATARI
 	Cconout('\007');
+#elif DOS
+	__asm {
+		mov ah,0eh
+		mov al,7
+		int 10h
+	}
 #else
 	putchar('\007');
 #endif
