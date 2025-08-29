@@ -17,6 +17,11 @@
 #ifdef TCAP
 #include <curses.h>
 #endif
+#ifdef DOS
+#include <i86.h>
+static void __far *Screen;
+
+#endif
 
 void windinit(void)
 {
@@ -51,6 +56,18 @@ void windinit(void)
 	nonl();
 	noecho();
 #endif
+#ifdef DOS
+	int mode;
+	Columns=80;
+	Rows=25;
+	__asm {
+		mov ah,0fh
+		int 10h
+		mov [mode],ax
+	}
+	if ((mode & 0xff) == 7) Screen = MK_FP(0xb000, 0);
+	else Screen = MK_FP(0xb800, 0);
+#endif
 }
 
 void windgoto(int r, int c)
@@ -65,6 +82,15 @@ void windgoto(int r, int c)
 #endif
 #ifdef TCAP
 	move(r,c);
+#endif
+#ifdef DOS
+	__asm {
+		mov ah,2
+		mov dh,byte ptr [r]
+		mov dl,byte ptr [c]
+		xor bh,bh
+		int 10h
+	}
 #endif
 }
 
@@ -97,17 +123,31 @@ void windclear(void)
 	clear();
 	refresh();
 #endif
+#ifdef DOS
+	unsigned __far *scr = Screen;
+	while (FP_OFF(scr) < Rows * Columns * 2) {
+		*scr++ = 0x0700;
+	}
+#endif
 }
 
 int windgetc(void)
 {
 #ifdef ATARI
 	return(Cnecin());
+#elif DOS
+	int r = 0;
+	__asm {
+	l:
+		mov ah,10h
+		int 16h
+		mov byte ptr [r],al
+	}
+	return r;
 #else
 	return(getchar());
 #endif
 }
-
 void windstr(char *s)
 {
 #ifdef ATARI
@@ -119,6 +159,9 @@ void windstr(char *s)
 #ifdef TCAP
 	addstr(s);
 	refresh();
+#endif
+#ifdef DOS
+	while (*s) windputc(*s++);
 #endif
 }
 
@@ -132,6 +175,14 @@ void windputc(int c)
 #endif
 #ifdef TCAP
 	addch(c);
+#endif
+#ifdef DOS
+	__asm {
+		mov ah,0eh
+		mov al,byte ptr [c]
+		mov bx,7
+		int 10h
+	}
 #endif
 }
 

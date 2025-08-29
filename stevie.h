@@ -10,7 +10,11 @@
 /*#define UNIXPC	1	1 The AT&T UNIX PC (console) */
 /*#define TCAP		1	For termcap-based terminals */
 
-#define FILELENG 64000
+#ifdef DOS
+#  define FILELENG 32000
+#else
+#  define FILELENG 64000
+#endif
 #define NORMAL 0
 #define CMDLINE 1
 #define INSERT 2
