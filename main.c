@@ -3,14 +3,17 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "stevie.h"
 
 #ifdef ATARI
 #include <osbind.h>
 #endif
-
-#define NULL 0
+#if defined(UNIXPC) || defined(TCAP)
+#include <unistd.h>
+#endif
 
 int Rows;		/* Number of Rows and Columns */
 int Columns;		/* in the current window. */
@@ -77,9 +80,7 @@ int Ninsert = 0;	/* Number of characters in the current insertion. */
 int Undelchars = 0;	/* Number of characters to delete, when undoing. */
 char *Insptr = NULL;
 
-main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
 	int mode = 8;
 
@@ -151,7 +152,7 @@ char **argv;
  * stuff from Filemem to Nextscreen, and update Botchar.
  */
 
-filetonext()
+void filetonext(void)
 {
 	int row, col;
 	char *screenp = Nextscreen;
@@ -239,7 +240,7 @@ filetonext()
  * to avoid unnecessary output.
  */
 
-nexttoscreen()
+void nexttoscreen(void)
 {
 	char *np = Nextscreen;
 	char *rp = Realscreen;
@@ -270,13 +271,13 @@ nexttoscreen()
 	windrefresh();
 }
 
-updatescreen()
+void updatescreen(void)
 {
 	filetonext();
 	nexttoscreen();
 }
 
-screenclear()
+void screenclear(void)
 {
 	int n;
 
@@ -288,7 +289,7 @@ screenclear()
 	}
 }
 
-filealloc()
+void filealloc(void)
 {
 	if ( (Filemem=malloc((unsigned)FILELENG)) == NULL ) {
 		fprintf(stderr,"Unable to allocate %d bytes for file memory!\n",
@@ -298,16 +299,14 @@ filealloc()
 	Filemax = Filemem + FILELENG;
 }
 
-screenalloc()
+void screenalloc(void)
 {
 	Realscreen = malloc((unsigned)(Rows*Columns));
 	Nextscreen = malloc((unsigned)(Rows*Columns));
 }
 
-readfile(fname,fromp,nochangename)
-char *fname;
-char *fromp;
-int nochangename;	/* if 1, don't change the Filename */
+int readfile(char *fname, char *fromp, int nochangename)
+/*int nochangename;	 if 1, don't change the Filename */
 {
 #ifdef ATARI
 	static char currdisk = 0;
@@ -356,7 +355,7 @@ int nochangename;	/* if 1, don't change the Filename */
 			exit(1);
 		}
 		/* Insert the char at the current point by shifting
-		/* everything down. */
+		   everything down. */
 		for ( p=Fileend; p>fromp; p-- )
 			*p = *(p-1);
 		*fromp++ = c;
@@ -381,8 +380,7 @@ int nochangename;	/* if 1, don't change the Filename */
 static char getcbuff[1024];
 static char *getcnext = NULL;
 
-stuffin(s)
-char *s;
+void stuffin(char *s)
 {
 	if ( getcnext == NULL ) {
 		strcpy(getcbuff,s);
@@ -392,9 +390,7 @@ char *s;
 		strcat(getcbuff,s);
 }
 
-addtobuff(s,c1,c2,c3,c4,c5,c6)
-char *s;
-char c1, c2, c3, c4, c5, c6;
+void addtobuff(char *s, char c1, char c2, char c3, char c4, char c5, char c6)
 {
 	char *p = s;
 	if ( (*p++ = c1) == '\0' )
@@ -411,7 +407,7 @@ char c1, c2, c3, c4, c5, c6;
 		return;
 }
 
-vgetc()
+int vgetc(void)
 {
 	if ( getcnext != NULL ) {
 		int nextc = *getcnext++;
@@ -424,7 +420,7 @@ vgetc()
 	return(windgetc());
 }
 
-vpeekc()
+int vpeekc(void)
 {
 	if ( getcnext != NULL )
 		return(*getcnext);
@@ -437,7 +433,7 @@ vpeekc()
  * Return non-zero if input is pending.
  */
 
-anyinput()
+int anyinput(void)
 {
 	if ( getcnext != NULL )
 		return(1);

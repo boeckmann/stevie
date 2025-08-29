@@ -4,6 +4,8 @@
 
 #include "stevie.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef ATARI
 #include <osbind.h>
@@ -16,7 +18,7 @@
 #include <curses.h>
 #endif
 
-windinit()
+void windinit(void)
 {
 #ifdef ATARI
 	Columns=80;
@@ -40,7 +42,6 @@ windinit()
 	noecho();
 #endif
 #ifdef TCAP
-	char *getenv();
 	char *p = getenv("TERM");
 
 	initscr();
@@ -55,8 +56,7 @@ windinit()
 #endif
 }
 
-windgoto(r,c)
-int r,c;
+void windgoto(int r, int c)
 {
 #ifdef UNIXPC
 	printf("\033[%d;%dH",r+1,c+1);
@@ -71,8 +71,7 @@ int r,c;
 #endif
 }
 
-windexit(r)
-int r;
+void windexit(int r)
 {
 #ifdef UNIXPC
 	nocbreak();
@@ -89,7 +88,7 @@ int r;
 	exit(r);
 }
 
-windclear()
+void windclear(void)
 {
 #ifdef UNIXPC
 	printf("\033[H\033[J");
@@ -103,7 +102,7 @@ windclear()
 #endif
 }
 
-windgetc()
+int windgetc(void)
 {
 #ifdef ATARI
 	return(Cnecin());
@@ -112,8 +111,7 @@ windgetc()
 #endif
 }
 
-windstr(s)
-char *s;
+void windstr(char *s)
 {
 #ifdef ATARI
 	Cconws(s);
@@ -127,8 +125,7 @@ char *s;
 #endif
 }
 
-windputc(c)
-int c;
+void windputc(int c)
 {
 #ifdef ATARI
 	Cconout(c);
@@ -141,14 +138,14 @@ int c;
 #endif
 }
 
-windrefresh()
+void windrefresh(void)
 {
 #ifdef TCAP
 	refresh();
 #endif
 }
 
-beep()
+void beeep(void)
 {
 #ifdef ATARI
 	Cconout('\007');

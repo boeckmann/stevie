@@ -3,6 +3,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "stevie.h"
 
@@ -12,7 +14,7 @@
  * Add a blank line below the current line.
  */
 
-opencmd()
+void opencmd(void)
 {
 	/* get to the end of the current line */ 
 	while ( Curschar<Fileend && (*Curschar) != '\n' )
@@ -24,16 +26,14 @@ opencmd()
 	appchar('\n');
 }
 
-issepchar(c)
-char c;
+int issepchar(char c)
 {
 	if ( strchr(WORDSEP,c) != NULL )
 		return(1);
 	return(0);
 }
 
-cntlines(pbegin,pend)
-char *pbegin, *pend;
+int cntlines(char *pbegin, char *pend)
 {
 	int lnum = 1;
 	char *p;
@@ -45,7 +45,7 @@ char *pbegin, *pend;
 	return(lnum);
 }
 
-fileinfo()
+void fileinfo(void)
 {
 	char buff[128];
 
@@ -57,8 +57,7 @@ fileinfo()
 	message(buff);
 }
 
-gotoline(n)
-int n;
+void gotoline(int n)
 {
 	char *p;
 
@@ -93,7 +92,7 @@ int Savednum = 0;
  * Save a copy of the current line(s) for later 'p'lacing.
  */
 
-yankline(n)
+void yankline(int n)
 {
 	char *savep, *p, *q;
 	int leng, k;
@@ -130,8 +129,7 @@ yankline(n)
  * If k==1, 'P'ut the line (i.e. above instead of below.
  */
 
-putline(k)
-int k;
+void putline(int k)
 {
 	char *p;
 	int n;
@@ -163,8 +161,7 @@ int k;
 	updatescreen();
 }
 
-inschar(c)
-int c;
+void inschar(int c)
 {
 	register char *p;
 
@@ -181,8 +178,7 @@ int c;
 	CHANGED;
 }
 
-insstr(s)
-char *s;
+void insertstr(char *s)
 {
 	register char *p;
 	int k, n = strlen(s);
@@ -201,8 +197,7 @@ char *s;
 	CHANGED;
 }
 
-appchar(c)
-int c;
+void appchar(int c)
 {
 	char *p, *endp;
 
@@ -220,8 +215,7 @@ int c;
 	CHANGED;
 }
 
-canincrease(n)
-int n;
+int canincrease(int n)
 {
 	if ( (Fileend+n) >= Filemax ) {
 		message("Can't add anything, file is too big!");
@@ -231,9 +225,7 @@ int n;
 	return(1);
 }
 
-#define NULL 0
-
-delchar()
+void delchar(void)
 {
 	char *p;
 
@@ -252,8 +244,8 @@ delchar()
 	CHANGED;
 }
 
-delword(deltrailing)
-int deltrailing;	/* 1 if trailing white space should be removed. */
+void delword(int deltrailing)
+/*int deltrailing;	 1 if trailing white space should be removed. */
 {
 	int c = *Curschar;
 	char *p = Undobuff;
@@ -298,11 +290,11 @@ int deltrailing;	/* 1 if trailing white space should be removed. */
 	*p = '\0';
 }
 
-delline(nlines)
+void delline(int nlines)
 {
-	int nchars;
 	char *p, *q;
-
+	int nchars;
+	
 	/* If we're not at the beginning of the line, get there. */
 	if ( *Curschar != '\n' ) {
 		/* back up to the previous newline (or the beginning */
@@ -338,15 +330,4 @@ delline(nlines)
 		}
 	}
 	message("");
-}
-
-char *strchr(s,c)
-char *s;
-int c;
-{
-	do {
-		if ( *s == c )
-			return(s);
-	} while (*s++);
-	return(NULL);
 }

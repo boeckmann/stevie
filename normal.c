@@ -2,6 +2,7 @@
  * STevie - ST editor for VI enthusiasts.    ...Tim Thompson...twitch!tjt...
  */
 
+#include <stdio.h>
 #include <ctype.h>
 #include "stevie.h"
 
@@ -11,8 +12,7 @@
  * Execute a command in normal mode.
  */
 
-normal(c)
-int c;
+void normal(int c)
 {
 	char *p, *q;
 	int nchar, n;
@@ -28,22 +28,22 @@ int c;
 	case 04:
 		/* control-d */
 		if ( ! onedown(10) )
-			beep();
+			beeep();
 		break;
 	case  025:
 		/* control-u */
 		if ( ! oneup(10) )
-			beep();
+			beeep();
 		break;
 	case 06:
 		/* control-f */
 		if ( ! onedown(Rows) )
-			beep();
+			beeep();
 		break;
 	case 02:
 		/* control-b */
 		if ( ! oneup(Rows) )
-			beep();
+			beeep();
 		break;
 	case '\007':
 		fileinfo();
@@ -53,19 +53,19 @@ int c;
 		break;
 	case 'l':
 		if ( ! oneright() )
-			beep();
+			beeep();
 		break;
 	case 'h':
 		if ( ! oneleft() )
-			beep();
+			beeep();
 		break;
 	case 'k':
 		if ( ! oneup(1) )
-			beep();
+			beeep();
 		break;
 	case 'j':
 		if ( ! onedown(1) )
-			beep();
+			beeep();
 		break;
 	case 'b':
 		/* If we're on the first character of a word, force */
@@ -129,12 +129,12 @@ int c;
 		/* Can't do it if we're on a blank line.  (Actually it */
 		/* does work, but we want to match the real 'vi'...) */
 		if ( *Curschar == '\n' )
-			beep();
+			beeep();
 		else {
-			addtobuff(Redobuff,'x',NULL);
+			addtobuff(Redobuff,'x',0,0,0,0,0);
 			/* To undo it, we insert the same character back. */
 			resetundo();
-			addtobuff(Undobuff,'i',*Curschar,'\033',NULL);
+			addtobuff(Undobuff,'i',*Curschar,'\033',0,0,0);
 			Uncurschar = Curschar;
 			delchar();
 			updatescreen();
@@ -179,10 +179,10 @@ int c;
 			}
 			else
 				nchar = 'P';
-			addtobuff(Undobuff,nchar,NULL);
+			addtobuff(Undobuff, nchar,0,0,0,0,0);
 			break;
 		case 'w':
-			addtobuff(Redobuff,'d','w',NULL);
+			addtobuff(Redobuff,'d','w',0,0,0,0);
 			resetundo();
 			delword(1);
 			Uncurschar = Curschar;
@@ -219,7 +219,7 @@ int c;
 			yankline(Prenum==0?1:Prenum);
 			break;
 		default:
-			beep();
+			beeep();
 		}
 		break;
 	case '>':
@@ -231,7 +231,7 @@ int c;
 			updatescreen();
 			break;
 		default:
-			beep();
+			beeep();
 		}
 		break;
 	case '<':
@@ -243,7 +243,7 @@ int c;
 			updatescreen();
 			break;
 		default:
-			beep();
+			beeep();
 		}
 		break;
 	case '?':
@@ -277,7 +277,7 @@ int c;
 			nchar = '\n';	/* convert \r to \n */
 			/* Save stuff necessary to undo it, by joining */
 			Uncurschar = Curschar-1;
-			addtobuff(Undobuff,'J','i',*Curschar,'\033',NULL);
+			addtobuff(Undobuff,'J','i',*Curschar,'\033',0,0);
 			/* Change current character. */
 			*Curschar = nchar;
 			/* We don't want to end up on the '\n' */
@@ -288,13 +288,13 @@ int c;
 		}
 		else {
 			/* Replacing with a normal character */
-			addtobuff(Undobuff,'r',*Curschar,NULL);
+			addtobuff(Undobuff,'r',*Curschar,0,0,0,0);
 			Uncurschar = Curschar;
 			/* Change current character. */
 			*Curschar = nchar;
 		}
 		/* Save stuff necessary to redo it */
-		addtobuff(Redobuff,'r',nchar,NULL);
+		addtobuff(Redobuff,'r',nchar,0,0,0,0);
 		updatescreen();
 		break;
 	case 'p':
@@ -307,15 +307,15 @@ int c;
 		for ( p=Curschar; *p!= '\n' && p<(Fileend-1) ; p++ )
 			;
 		if ( p >= (Fileend-1) ) {
-			beep();
+			beeep();
 			break;
 		}
 		Curschar = p;
 		delchar();
 		resetundo();
 		Uncurschar = Curschar;
-		addtobuff(Undobuff,'i','\n','\033',NULL);
-		addtobuff(Redobuff,'J',NULL);
+		addtobuff(Undobuff,'i','\n','\033',0,0,0);
+		addtobuff(Redobuff,'J',0,0,0,0,0);
 		updatescreen();
 		break;
 	case '.':
@@ -347,7 +347,7 @@ int c;
 		}
 		break;
 	default:
-		beep();
+		beeep();
 		break;
 	}
 }
@@ -359,7 +359,7 @@ int c;
  * If inout==1, delete a tab from the begining of the next num lines.
  */
 
-tabinout(inout,num)
+void tabinout(int inout, int num)
 {
 	int ntodo = num;
 	char *savecurs, *p;
@@ -391,8 +391,7 @@ tabinout(inout,num)
 	sprintf(Undobuff,"%d%s",num,inout==0?"<<":">>");
 }
 
-startinsert(initstr)
-char *initstr;
+void startinsert(char *initstr)
 {
 	char *p, c;
 
@@ -405,7 +404,7 @@ char *initstr;
 	windrefresh();
 }
 
-resetundo()
+void resetundo(void)
 {
 	Undelchars = 0;
 	*Undobuff = '\0';

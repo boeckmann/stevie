@@ -7,7 +7,7 @@
 
 static int helprow;
 
-help()
+void help(void)
 {
 	windclear();
 	windgoto(helprow=0,0);
@@ -105,8 +105,7 @@ longline("\
 	vgetc();
 }
 
-longline(p)
-char *p;
+void longline(char *p)
 {
 	char *s;
 

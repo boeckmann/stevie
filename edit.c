@@ -5,8 +5,11 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "stevie.h"
+#if defined(UNIXPC) || defined(TCAP)
+#include <unistd.h>
+#endif
 
-edit()
+void edit(void)
 {
 	int c, c1, c2;
 	char *p, *q;
@@ -78,7 +81,7 @@ edit()
 			break;
 		case '\b':
 			if ( Curschar <= Insstart )
-				beep();
+				beeep();
 			else {
 				int wasnewline = 0;
 				if ( *Curschar == '\n' )
@@ -135,8 +138,7 @@ edit()
 	}
 }
 
-insertchar(c)
-int c;
+void insertchar(int c)
 {
 	char *p;
 
@@ -157,12 +159,12 @@ int c;
 			Ninsert++;
 		}
 		*Insptr = '\0';
-		insstr(p);
+		insertstr(p);
 	}
 	updatescreen();
 }
 
-gethexchar()
+int gethexchar(void)
 {
 	int c;
 
@@ -173,13 +175,13 @@ gethexchar()
 		if ( hextoint(c) >= 0 )
 			break;
 		message("Expecting a hexidecimal character (0-9 or a-f)");
-		beep();
+		beeep();
 		sleep(1);
 	}
 	return(c);
 }
 
-getout()
+void getout(void)
 {
 	windgoto(Rows-1,0);
 	windrefresh();
@@ -188,7 +190,7 @@ getout()
 	windexit(0);
 }
 
-cursupdate()
+void cursupdate(void)
 {
 	char *p;
 	int inc, c, nlines;
@@ -252,8 +254,7 @@ cursupdate()
 	}
 }
 
-scrolldown(nlines)
-int nlines;
+void scrolldown(int nlines)
 {
 	int n;
 	char *p;
@@ -276,7 +277,7 @@ int nlines;
  * sucessful, 0 when we hit a boundary (of a line, or the file).
  */
 
-oneright()
+int oneright(void)
 {
 	char *p;
 
@@ -287,7 +288,7 @@ oneright()
 	return(1);
 }
 
-oneleft()
+int oneleft(void)
 {
 	char *p;
 
@@ -298,13 +299,13 @@ oneleft()
 	return(1);
 }
 
-beginline()
+void beginline(void)
 {
 	while ( oneleft() )
 		;
 }
 
-oneup(n)
+int oneup(int n)
 {
 	char *p, *np;
 	int savevcol, k;
@@ -332,7 +333,7 @@ oneup(n)
 	return(1);
 }
 
-onedown(n)
+int onedown(int n)
 {
 	char *p, *np;
 	int k;

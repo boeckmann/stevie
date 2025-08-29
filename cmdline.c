@@ -3,11 +3,13 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "stevie.h"
 
-readcmdline(firstc)
-int firstc;	/* either ':', '/', or '?' */
+void readcmdline(int firstc)
+/*int firstc;	 either ':', '/', or '?' */
 {
 	int c;
 	char buff[100];
@@ -178,12 +180,12 @@ int firstc;	/* either ':', '/', or '?' */
 	badcmd();
 }
 
-badcmd()
+void badcmd(void)
 {
 	message("Unrecognized command");
 }
 
-gotocmd(clr,fresh,firstc)
+void gotocmd(int clr, int fresh, int firstc)
 {
 	int n;
 
@@ -200,8 +202,7 @@ gotocmd(clr,fresh,firstc)
 		windrefresh();
 }
 
-message(s)
-char *s;
+void message(char *s)
 {
 	static char *lastmess = NULL;
 	char *p;
@@ -219,8 +220,7 @@ char *s;
 	lastmess = strsave(s);
 }
 
-writeit(fname)
-char *fname;
+int writeit(char *fname)
 {
 	FILE *f;
 	char buff[128];
@@ -244,8 +244,7 @@ char *fname;
 	return(1);
 }
 
-filemess(s)
-char *s;
+void filemess(char *s)
 {
 	char buff[128];
 	sprintf(buff,"\"%s\" %s",Filename,s);

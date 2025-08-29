@@ -3,6 +3,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "stevie.h"
 
 /*
@@ -12,9 +14,7 @@
  * 'curr' char.  Return NULL if there is no next line.
  */
 
-char *
-nextline(curr)
-char *curr;
+char *nextline(char *curr)
 {
 	while ( curr<Fileend ) {
 		if ( *curr++ == '\n' )
@@ -32,9 +32,7 @@ char *curr;
  * 'curr' char.  Return NULL if there is no previous line.
  */
 
-char *
-prevline(curr)
-char *curr;
+char *prevline(char *curr)
 {
 	int nnl = 0;
 
@@ -68,10 +66,7 @@ char *curr;
  * Try to advance to the specified column, starting at p.
  */
 
-char *
-coladvance(p,col)
-char *p;
-int col;
+char *coladvance(char *p, int col)
 {
 	int c, inc;
 
@@ -96,13 +91,9 @@ int col;
 	}
 	return(p);
 }
-char *strcpy(), *malloc();
 
-#define NULL 0
   
-char *
-alloc(size)
-unsigned size;
+char *alloc(unsigned size)
 {
 	char *p;		/* pointer to new storage space */
 
@@ -113,22 +104,16 @@ unsigned size;
 	return(p);
 }
 
-char *
-strsave(string)
-char *string;
+char *strsave(char *string)
 {
 	return(strcpy(alloc((unsigned)(strlen(string)+1)),string));
 }
 
-#define NULL 0
-
 static char *laststr = NULL;
 static int lastdir;
 
-char *
-ssearch(dir,str)
-int dir;	/* FORWARD or BACKWARD */
-char *str;
+char *ssearch(int dir, char *str)
+/*int dir;	 FORWARD or BACKWARD */
 {
 	if ( laststr != NULL )
 		free(laststr);
@@ -140,9 +125,7 @@ char *str;
 		return(fwdsearch(str));
 }
 
-dosearch(dir,str)
-int dir;
-char *str;
+void dosearch(int dir, char *str)
 {
 	char *p;
 
@@ -166,18 +149,16 @@ char *str;
 }
 
 
-repsearch()
+void repsearch(void)
 {
 	if ( laststr == NULL )
-		beep();
+		beeep();
 	else {
 		dosearch(lastdir,laststr);
 	}
 }
 
-char *
-fwdsearch(str)
-char *str;
+char *fwdsearch(char *str)
 {
 	register char *sofar = str;
 	register char *infile = Curschar+1;
@@ -209,9 +190,7 @@ char *str;
 		return(NULL);
 }
 
-char *
-bcksearch(str)
-char *str;
+char *bcksearch(char *str)
 {
 	int leng = strlen(str);
 	char *infile = Curschar+1;
