@@ -143,6 +143,8 @@ int main(int argc, char **argv)
 	edit();
 
 	windexit(0);
+	
+	return 0;
 }
 
 /*
