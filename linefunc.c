@@ -38,24 +38,21 @@ char *prevline(char *curr)
 
 	/* If we are currently positioned on a '\n', */
 	/* we are on a blank line.  Adjust accordingly. */
-	if ( *curr == '\n' )
-		nnl = -1;
-	while ( curr>Filemem ) {
+	if ( *curr == '\n' ) nnl = -1;
+
+	while ( 1 ) {
+		if ( curr < Filemem )
+			return (nnl) ? Filemem : NULL;
+
 		/* look for the 2nd previous newline */
 		if ( *curr == '\n' ) {
 			nnl++;
-			if ( nnl == 2)
+			if ( nnl == 2 )
 				break;
 		}
 		curr--;
 	}
-	if ( curr <= Filemem ) {
-		/* If we found 1 newline, we found the first line */
-		if ( nnl == 1 )
-			return(Filemem);
-		else
-			return(NULL);
-	}
+
 	/* return the first char of the previous line */
 	return(++curr);
 }
