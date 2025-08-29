@@ -1,5 +1,10 @@
+***************************************************************************
+Original STEVIE converted to ANSI-C                  ...Bernd Boeckmann...
+***************************************************************************
+
 STEVIE - ST Editor for VI Enthusiasts   ...Tim Thompson...twitch!tjt...
 =====================================
+
 
 The STEVIE editor is a fairly accurate (in the small subset of commands
 it chooses to implement) version of the VI editor.  It was written
